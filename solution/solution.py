@@ -52,9 +52,7 @@ def call_openai(
     top_p: float = 0.9,
     max_tokens: int = 256,
 ) -> tuple[str, float]:
-    """
-    Gọi OpenAI Chat Completions API, trả về nội dung phản hồi + độ trễ.
-    """
+
     from openai import OpenAI
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -79,9 +77,7 @@ def call_openai_mini(
     top_p: float = 0.9,
     max_tokens: int = 256,
 ) -> tuple[str, float]:
-    """
-    Gọi API với model gpt-4o-mini — nhanh hơn và rẻ hơn.
-    """
+    
     return call_openai(
         prompt,
         model=OPENAI_MINI_MODEL,
@@ -95,9 +91,7 @@ def call_openai_mini(
 # Task 1.3 — So sánh GPT-4o vs GPT-4o-mini
 # ---------------------------------------------------------------------------
 def compare_models(prompt: str) -> dict:
-    """
-    Gọi cả hai model với cùng một prompt và trả về dict so sánh.
-    """
+    
     gpt4o_answer, gpt4o_time = call_openai(prompt)
     mini_answer, mini_time = call_openai_mini(prompt)
 
@@ -129,9 +123,7 @@ def chat_with_system_prompt(
     temperature: float = 0.7,
     max_tokens: int = 256,
 ) -> tuple[str, float]:
-    """
-    Gọi API với MESSAGES gồm 2 phần: system prompt và user prompt.
-    """
+    
     from openai import OpenAI
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -153,9 +145,7 @@ def chat_with_system_prompt(
 # Task 2.2 — Đếm token bằng tiktoken
 # ---------------------------------------------------------------------------
 def count_tokens(text: str, model: str = OPENAI_MODEL) -> int:
-    """
-    Đếm số token của một đoạn text bằng thư viện tiktoken.
-    """
+    
     try:
         import tiktoken
         enc = tiktoken.encoding_for_model(model)
@@ -168,9 +158,7 @@ def count_tokens(text: str, model: str = OPENAI_MODEL) -> int:
 # Task 2.3 — Ước tính chi phí chính xác
 # ---------------------------------------------------------------------------
 def estimate_cost(prompt: str, response: str, model: str = OPENAI_MODEL) -> dict:
-    """
-    Tính chi phí một lượt gọi API dựa trên số token THẬT và bảng giá.
-    """
+    
     prompt_tokens = count_tokens(prompt, model)
     completion_tokens = count_tokens(response, model)
     pricing = PRICING_PER_1K_TOKENS.get(model, PRICING_PER_1K_TOKENS["gpt-4o"])
@@ -195,9 +183,7 @@ def estimate_cost(prompt: str, response: str, model: str = OPENAI_MODEL) -> dict
 # Task 3.1 — Chatbot streaming có lịch sử hội thoại
 # ---------------------------------------------------------------------------
 def streaming_chatbot() -> None:
-    """
-    Chatbot dòng lệnh tương tác dùng streaming.
-    """
+    
     from openai import OpenAI
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -237,9 +223,7 @@ def retry_with_backoff(
     max_retries: int = 3,
     base_delay: float = 0.1,
 ) -> Any:
-    """
-    Gọi fn(). Nếu ném exception, thử lại với exponential backoff.
-    """
+    
     for attempt in range(max_retries + 1):
         try:
             return fn()
@@ -257,9 +241,7 @@ def run_assistant(
     get_input: Callable[[], str] = None,
     max_turns: int = None,
 ) -> dict:
-    """
-    Trợ lý CLI hoàn chỉnh — ghép mọi thứ bạn đã xây trong Part 1–3.
-    """
+    
     if get_input is None:
         get_input = input
 
@@ -322,9 +304,7 @@ def run_assistant(
 # BONUS (không bắt buộc — cho bạn nào xong sớm)
 # ===========================================================================
 def batch_compare(prompts: list[str]) -> list[dict]:
-    """
-    Chạy compare_models cho từng prompt trong list.
-    """
+    
     results = []
     for p in prompts:
         res = compare_models(p)
@@ -334,9 +314,7 @@ def batch_compare(prompts: list[str]) -> list[dict]:
 
 
 def format_comparison_table(results: list[dict]) -> str:
-    """
-    Định dạng kết quả batch_compare thành bảng text dễ đọc.
-    """
+    
     lines = [
         f"{'Prompt':<40} | {'GPT-4o Response':<40} | {'Mini Response':<40} | {'GPT-4o Time':<12} | {'Mini Time':<12}",
         "-" * 155,
